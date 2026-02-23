@@ -133,48 +133,124 @@ class Node:
         self.id     = nid
         self.label  = label
         self.x      = int(rx * NET_W)
-        self.y      = int(ry * (H - 80))  + 40
+        self.y      = int(ry * (H - 80)) + 40
         self.type   = ntype
         self.color  = NODE_COLOR[ntype]
         self.radius = NODE_RADIUS[ntype]
         self.buffer = deque(maxlen=20)   # DTN buffer
         self.selected = False
-        self.pulse    = 0.0   # animation
+        self.pulse    = 0.0
+        self.last_flush_attempt = 0
 
     def draw(self, surf, font_sm, font_xs, selected):
-        # glow effect when selected
-        if selected:
-            glow_r = self.radius + 8
-            glow_surf = pygame.Surface((glow_r*2+4, glow_r*2+4), pygame.SRCALPHA)
-            pygame.draw.circle(glow_surf, (*C_SEL, 60), (glow_r+2, glow_r+2), glow_r)
-            surf.blit(glow_surf, (self.x - glow_r - 2, self.y - glow_r - 2))
-
-        # pulse ring if has buffered packets (DTN)
-        if self.buffer:
-            pulse_r = self.radius + 4 + int(4 * abs(math.sin(self.pulse)))
-            pygame.draw.circle(surf, C_PACKET_DTN, (self.x, self.y), pulse_r, 2)
-
-        # shadow
+        """วาดโหนดบนหน้าจอ"""
+        # เงา
         pygame.draw.circle(surf, (0,0,0), (self.x+2, self.y+2), self.radius)
-        # fill
+        
+        # ตัวโหนด
         pygame.draw.circle(surf, self.color, (self.x, self.y), self.radius)
-        # border
-        border_col = C_SEL if selected else (255,255,255)
+        
+        # เส้นขอบ (ถ้าถูกเลือก)
+        border_col = (255, 220, 80) if selected else (200, 200, 200)
         pygame.draw.circle(surf, border_col, (self.x, self.y), self.radius, 2)
 
-        # label
-        for i, line in enumerate(self.label.split("\n")):
-            txt = font_xs.render(line, True, C_TEXT)
-            surf.blit(txt, (self.x - txt.get_width()//2,
-                            self.y + self.radius + 2 + i*11))
-
-        # buffer badge
+        # แสดงจำนวน buffer ถ้ามี
         if self.buffer:
-            badge = font_xs.render(f"▣{len(self.buffer)}", True, C_PACKET_DTN)
-            surf.blit(badge, (self.x - badge.get_width()//2, self.y - self.radius - 13))
+            buffer_text = font_xs.render(f"📦{len(self.buffer)}", True, (180, 100, 255))
+            surf.blit(buffer_text, (self.x - 10, self.y - self.radius - 15))
+
+        # ชื่อโหนด
+        lines = self.label.split('\n')
+        y_offset = self.y + self.radius + 5
+        for line in lines:
+            text = font_xs.render(line, True, (230, 237, 243))
+            surf.blit(text, (self.x - text.get_width()//2, y_offset))
+            y_offset += 12
+
+        # เอฟเฟกต์กระพริบถ้ามี buffer
+        if self.buffer:
+            pulse = abs(math.sin(pygame.time.get_ticks() * 0.005)) * 5
+            pygame.draw.circle(surf, (180, 100, 255, 100), 
+                             (self.x, self.y), self.radius + pulse, 1)
 
     def hit(self, mx, my):
-        return math.hypot(mx - self.x, my - self.y) <= self.radius + 6
+        """ตรวจสอบว่าคลิกที่โหนดนี้หรือไม่"""
+        dist = math.hypot(mx - self.x, my - self.y)
+        return dist <= self.radius + 5
+
+    def find_path_to(self, dst_id, link_map, all_nodes):
+        """หา path จาก node นี้ไปยังปลายทาง (BFS)"""
+        from collections import deque
+        
+        visited = {self.id}
+        queue = deque([[self.id]])
+        
+        # สร้าง adjacency list จาก link_map
+        adj = {}
+        for (a, b), lnk in link_map.items():
+            if lnk.alive:  # ใช้เฉพาะ link ที่ยังทำงาน
+                adj.setdefault(a, []).append(b)
+                adj.setdefault(b, []).append(a)
+        
+        while queue:
+            path = queue.popleft()
+            cur = path[-1]
+            
+            if cur == dst_id:
+                # แปลง id -> Node object
+                node_path = [self]  # เริ่มที่โหนดปัจจุบัน
+                for node_id in path[1:]:  # ข้าม id แรกเพราะซ้ำกับ self
+                    for node in all_nodes.values():
+                        if node.id == node_id:
+                            node_path.append(node)
+                            break
+                return node_path
+            
+            for next_id in adj.get(cur, []):
+                if next_id not in visited:
+                    visited.add(next_id)
+                    queue.append(path + [next_id])
+        
+        return None  # ไม่มี path
+
+    def flush_buffer(self, current_time, link_map, packets_list, all_nodes, log_func):
+        """พยายามส่ง packets ที่ค้างใน buffer ออกไป"""
+        if not self.buffer:
+            return
+
+        # ลองทุก 2 วินาที
+        if current_time - self.last_flush_attempt < 2.0:
+            return
+        
+        self.last_flush_attempt = current_time
+        
+        # วนลูปดู packet ใน buffer
+        packets_to_remove = []
+        for pkt in list(self.buffer):
+            dst_id = pkt.path[-1].id
+            new_path = self.find_path_to(dst_id, link_map, all_nodes)
+            
+            if new_path and len(new_path) > 1:
+                # มี path แล้ว! ส่งต่อ
+                print(f"🔄 DTN flush: {self.id} → {dst_id}")
+                
+                # สร้าง packet ใหม่
+                new_pkt = Packet(pkt.msg, new_path, pkt.ptype)
+                packets_list.append(new_pkt)
+                
+                # เอาออกจาก buffer
+                packets_to_remove.append(pkt)
+                
+                # log
+                if log_func:
+                    log_func(f"🔀 DTN flush @ {self.id} → {dst_id}", (180, 100, 255))
+            else:
+                # ยังไม่มี path ก็รอต่อไป
+                pass
+
+        # ลบ packets ที่ส่งออกไปแล้ว
+        for pkt in packets_to_remove:
+            self.buffer.remove(pkt)
 
 
 class Link:
@@ -184,9 +260,10 @@ class Link:
         self.bw    = bw
         self.type  = ltype
         self.alive = True
-        self.quality = 1.0       # 0.0–1.0
+        self.quality = 1.0
         self.flicker_timer = 0
         self.backup = (ltype == "backup")
+        self.degradation_rate = random.uniform(0.005, 0.02)
 
     def color(self):
         if not self.alive:
@@ -204,13 +281,12 @@ class Link:
         self.alive = not self.alive
 
     def tick(self, dt):
-        # random quality fluctuation
-        self.quality += random.uniform(-0.02, 0.02)
-        self.quality  = max(0.1, min(1.0, self.quality))
+        """อัปเดตสถานะของ link (เช่น flicker recovery)"""
         if self.flicker_timer > 0:
             self.flicker_timer -= dt
-            if self.flicker_timer <= 0:
+            if self.flicker_timer <= 0 and not self.alive:
                 self.alive = True
+                self.quality = 1.0
 
     def draw(self, surf):
         n1, n2 = self.src, self.dst
@@ -244,6 +320,8 @@ class Packet:
         self.done     = False
         self.dead     = False      # dropped
         self.trail    = deque(maxlen=12)
+        self.retry_count = 0
+        self.source_node = path[0]
 
     @property
     def color(self):
@@ -263,9 +341,11 @@ class Packet:
         y  = n1.y + (n2.y - n1.y) * self.progress
         return (int(x), int(y))
 
-    def tick(self, link_map):
+    def tick(self, link_map, nodes):
+        """อัปเดตสถานะของ packet"""
         if self.done or self.dead:
             return
+    
         if self.seg >= len(self.path) - 1:
             self.done = True
             return
@@ -276,16 +356,19 @@ class Packet:
         lnk = link_map.get(key) or link_map.get((n2.id, n1.id))
 
         if lnk and not lnk.alive:
-            if self.ptype == "dtn":
-                # store at current node, wait
-                n2.buffer.append(self)
+            if self.ptype in ["dtn", "emergency"]:
+                # เก็บไว้ที่ node ปัจจุบัน
+                print(f"📦 เก็บ {self.msg[:10]} ที่ {n1.id}")
+                n1.buffer.append(self)
                 self.dead = True
+                return
             else:
-                self.dead = True   # dropped
-            return
+                self.dead = True
+                return
 
         self.trail.append(self.pos)
         self.progress += self.speed * (lnk.quality if lnk else 1.0)
+    
         if self.progress >= 1.0:
             self.progress = 0.0
             self.seg += 1
@@ -293,14 +376,6 @@ class Packet:
     def draw(self, surf):
         if self.done or self.dead:
             return
-        # trail
-        for i, (tx, ty) in enumerate(self.trail):
-            alpha = int(180 * i / max(1, len(self.trail)))
-            r = max(1, self.RADIUS - 3)
-            s = pygame.Surface((r*2, r*2), pygame.SRCALPHA)
-            pygame.draw.circle(s, (*self.color, alpha), (r, r), r)
-            surf.blit(s, (tx - r, ty - r))
-        # body
         x, y = self.pos
         pygame.draw.circle(surf, (0,0,0), (x+1,y+1), self.RADIUS)
         pygame.draw.circle(surf, self.color, (x, y), self.RADIUS)
@@ -344,7 +419,7 @@ class MountainNetSim:
             self.link_map[(src_id, dst_id)] = lnk
 
     def _find_path(self, src_id, dst_id):
-        """BFS respecting only alive links (with DTN fallback)."""
+        """BFS respecting only alive links"""
         from collections import deque as dq
         visited = {src_id}
         queue   = dq([[src_id]])
@@ -354,6 +429,8 @@ class MountainNetSim:
             if cur == dst_id:
                 return [self.nodes[n] for n in path]
             for (a, b), lnk in self.link_map.items():
+                if not lnk.alive:
+                    continue
                 nxt = None
                 if a == cur and b not in visited:
                     nxt = b
@@ -362,52 +439,38 @@ class MountainNetSim:
                 if nxt:
                     visited.add(nxt)
                     queue.append(path + [nxt])
-        return None  # no path
-
-    def _find_path_any(self, src_id, dst_id):
-        """BFS ignoring link state (for DTN routing)."""
-        from collections import deque as dq
-        visited = {src_id}
-        queue   = dq([[src_id]])
-        all_adj = {}
-        for (a, b) in self.link_map:
-            all_adj.setdefault(a, []).append(b)
-            all_adj.setdefault(b, []).append(a)
-        while queue:
-            path = queue.popleft()
-            cur  = path[-1]
-            if cur == dst_id:
-                return [self.nodes[n] for n in path]
-            for nxt in all_adj.get(cur, []):
-                if nxt not in visited:
-                    visited.add(nxt)
-                    queue.append(path + [nxt])
         return None
 
     def send_message(self, msg, dst_id, ptype="normal"):
+        """ส่งข้อความไปยังปลายทาง"""
         src_id = "GW"
+        src_node = self.nodes[src_id]
+        
+        # พยายามหา path ปกติ
         path = self._find_path(src_id, dst_id)
+        
         if path:
+            # มี path ปกติ ส่งเลย
             pkt = Packet(msg, path, ptype)
             self.packets.append(pkt)
             self.stats["sent"] += 1
             self._log(f"📤 [{ptype.upper()}] '{msg[:20]}' → {dst_id}", C_PACKET)
+            
+        elif ptype in ["dtn", "emergency"]:
+            # ไม่มี path ปกติ แต่เป็น DTN/emergency → เก็บไว้ที่ gateway
+            dummy_path = [src_node, self.nodes[dst_id]]
+            pkt = Packet(msg, dummy_path, "dtn")
+            src_node.buffer.append(pkt)
+            self.stats["sent"] += 1
+            self._log(f"🔀 [DTN] '{msg[:20]}' เก็บที่ GW รอส่ง → {dst_id}", C_PACKET_DTN)
         else:
-            # DTN: route through dead links, packet will buffer
-            path = self._find_path_any(src_id, dst_id)
-            if path:
-                pkt = Packet(msg, path, "dtn")
-                self.packets.append(pkt)
-                self.stats["sent"] += 1
-                self._log(f"🔀 [DTN] '{msg[:20]}' → {dst_id} (buffering)", C_PACKET_DTN)
-            else:
-                self._log(f"❌ not found the path to {dst_id}", C_RED)
+            # normal packet ไม่มีทางไป
+            self._log(f"❌ ไม่มี path ไป {dst_id}", C_RED)
 
     def _log(self, msg, color=None):
         self.log.append((msg, color or C_MUTED, time.time()))
 
     def _toggle_link_at(self, node):
-        """Toggle all links connected to this node."""
         nid = node.id
         for (a, b), lnk in self.link_map.items():
             if a == nid or b == nid:
@@ -428,7 +491,6 @@ class MountainNetSim:
             lnk.quality = 1.0
         self._log("🔄 reset all links", C_GREEN)
 
-    # ──────────────────────────────────────────────────────────────────────────
     def handle_events(self):
         for ev in pygame.event.get():
             if ev.type == pygame.QUIT:
@@ -472,97 +534,75 @@ class MountainNetSim:
 
             elif ev.type == pygame.MOUSEBUTTONDOWN:
                 mx, my = ev.pos
-                if mx > NET_W:   # panel click — ignore
+                if mx > NET_W:
                     continue
                 for node in self.nodes.values():
                     if node.hit(mx, my):
-                        if ev.button == 1:   # left click → select
+                        if ev.button == 1:
                             self.selected = node.id
                             self._log(f"🎯 selected destination: {node.id} ({node.type})", C_SEL)
-                        elif ev.button == 3:  # right click → toggle link
+                        elif ev.button == 3:
                             self._toggle_link_at(node)
                         break
 
-    # ──────────────────────────────────────────────────────────────────────────
     def update(self, dt):
         self.sim_time += dt
 
-        # tick links
+        # อัปเดตลิงก์
         for lnk in self.links:
             lnk.tick(dt)
 
-        # tick packets
+        # จัดการ DTN buffers
+        current_time = time.time()
+        for node in self.nodes.values():
+            node.flush_buffer(current_time, self.link_map, self.packets, self.nodes, self._log)
+
+        # อัปเดต packets
+        packets_to_remove = []
         for pkt in self.packets:
-            pkt.tick(self.link_map)
+            pkt.tick(self.link_map, self.nodes)
+            
             if pkt.done:
                 self.stats["delivered"] += 1
-                self._log(f"✅ sent to {pkt.path[-1].id}: '{pkt.msg[:24]}'", C_GREEN)
-                pkt.done = False
-                pkt.dead = True
-            elif pkt.dead and pkt.ptype != "dtn":
-                self.stats["dropped"] += 1
-                self._log(f"❌ dropped: '{pkt.msg[:20]}'", C_RED)
+                self._log(f"✅ ส่งถึง {pkt.path[-1].id}: '{pkt.msg[:24]}'", C_GREEN)
+                packets_to_remove.append(pkt)
+            elif pkt.dead:
+                if pkt.ptype not in ["dtn", "emergency"]:
+                    self.stats["dropped"] += 1
+                    self._log(f"❌ dropped: '{pkt.msg[:20]}'", C_RED)
+                    packets_to_remove.append(pkt)
+        
+        for pkt in packets_to_remove:
+            if pkt in self.packets:
+                self.packets.remove(pkt)
 
-# ลบเฉพาะ packet ที่ dead และไม่ใช่ dtn ที่กำลัง buffer
-            self.packets = [p for p in self.packets if not p.dead or 
-                        (p.ptype == "dtn" and any(p in n.buffer for n in self.nodes.values()))]
-
-        self.packets = [p for p in self.packets if not p.dead]
-
-        # pulse animation
+        # อัปเดต animation และสถิติ
         for node in self.nodes.values():
             node.pulse += 0.08
 
-        # try to flush DTN buffers
-        # แทนที่บล็อก DTN flush เดิมทั้งหมด
-        for node in self.nodes.values():
-            if node.buffer:
-                has_alive_link = any(
-                    lnk.alive
-                    for (a, b), lnk in self.link_map.items()
-                    if a == node.id or b == node.id
-                )
-                if has_alive_link:
-                    pkt = node.buffer.popleft()
-                    dst_id = pkt.path[-1].id
-                    # หา path ใหม่จาก node ปัจจุบันไปยังปลายทาง
-                    new_path = self._find_path(node.id, dst_id)
-                    if new_path:
-                        pkt.path     = new_path
-                        pkt.seg      = 0
-                        pkt.progress = 0.0
-                        pkt.dead     = False
-                        self.packets.append(pkt)
-                        self._log(f"🔀 DTN flush @ {node.id} → {dst_id}", C_PACKET_DTN)
-                    else:
-                        # ยังไม่มี path ไป dst วางกลับ buffer รอก่อน
-                        node.buffer.appendleft(pkt)
+        self.stats["dtn_stored"] = sum(len(n.buffer) for n in self.nodes.values())
 
-    # ──────────────────────────────────────────────────────────────────────────
     def draw(self):
         self.screen.fill(BG)
 
-        # ── network canvas ────────────────────────────────────────────────────
-        # draw links
+        # วาด links
         for lnk in self.links:
             lnk.draw(self.screen)
 
-        # draw nodes
+        # วาด nodes
         sel_id = self.selected
         for node in self.nodes.values():
             node.draw(self.screen, self.font_sm, self.font_xs, node.id == sel_id)
 
-        # draw packets
+        # วาด packets
         for pkt in self.packets:
             pkt.draw(self.screen)
 
         # divider
         pygame.draw.line(self.screen, PANEL_BORDER, (NET_W, 0), (NET_W, H), 2)
 
-        # ── right panel ───────────────────────────────────────────────────────
+        # วาด panel และ top bar
         self._draw_panel()
-
-        # ── top bar ───────────────────────────────────────────────────────────
         self._draw_topbar()
 
         pygame.display.flip()
@@ -579,12 +619,12 @@ class MountainNetSim:
         pygame.draw.rect(self.screen, PANEL_BG, (NET_W, 0, PANEL_W, H))
 
         y = 10
-        # ── Title ──
+        # Title
         t = self.font_lg.render("📡  Control Panel", True, C_BACKBONE)
         self.screen.blit(t, (px, y)); y += 22
         pygame.draw.line(self.screen, PANEL_BORDER, (NET_W+4, y), (W-4, y)); y += 8
 
-        # ── Stats ──
+        # Stats
         t = self.font_md.render("Statistics", True, C_MUTED)
         self.screen.blit(t, (px, y)); y += 16
         stats = [
@@ -598,7 +638,7 @@ class MountainNetSim:
         y += 4
         pygame.draw.line(self.screen, PANEL_BORDER, (NET_W+4, y), (W-4, y)); y += 8
 
-        # ── Destination selector ──
+        # Destination selector
         t = self.font_md.render("Destination Node", True, C_MUTED)
         self.screen.blit(t, (px, y)); y += 16
         sel_lbl = self.selected or "(click a node on the map)"
@@ -606,7 +646,7 @@ class MountainNetSim:
         self.screen.blit(self.font_sm.render(f"▶ {sel_lbl}", True, col), (px, y)); y += 18
         pygame.draw.line(self.screen, PANEL_BORDER, (NET_W+4, y), (W-4, y)); y += 8
 
-        # ── Input box ──
+        # Input box
         t = self.font_md.render("Message  (Enter=send, !=emergency)", True, C_MUTED)
         self.screen.blit(t, (px, y)); y += 16
         box_rect = pygame.Rect(NET_W+4, y, PANEL_W-12, 26)
@@ -618,42 +658,35 @@ class MountainNetSim:
         y += 32
         pygame.draw.line(self.screen, PANEL_BORDER, (NET_W+4, y), (W-4, y)); y += 8
 
-        # ── Quick send buttons hint ──
+        # Quick send hints
         hints = [
             ("[1] send greeting message → Village A",   C_MUTED),
-            ("[2] !emergency forest fire  → Village D",   C_PACKET_EMG),
-            ("[3] sensor batch    → Sensor 1",     C_IOT),
-            ("[S] random link loss (chaos)",           C_RED),
-            ("[R] reset all links",                   C_GREEN),
-            ("[C] clear log",                         C_MUTED),
-            ("click right on node = toggle signal",         C_YELLOW),
+            ("[2] !emergency forest fire  → Village D", C_PACKET_EMG),
+            ("[3] sensor batch → Sensor 1", C_IOT),
+            ("[S] random link loss (chaos)", C_RED),
+            ("[R] reset all links", C_GREEN),
+            ("[C] clear log", C_MUTED),
+            ("click right on node = toggle signal", C_YELLOW),
         ]
         for h, c in hints:
             self.screen.blit(self.font_xs.render(h, True, c), (px, y)); y += 13
         y += 4
         pygame.draw.line(self.screen, PANEL_BORDER, (NET_W+4, y), (W-4, y)); y += 8
 
-        # ── Legend ──
+        # Legend
         t = self.font_md.render("Legend", True, C_MUTED)
         self.screen.blit(t, (px, y)); y += 15
         legend = [
-            ("● Gateway",    C_GATEWAY),
-            ("● Backbone",   C_BACKBONE),
-            ("● Relay",      C_RELAY),
-            ("● Village",    C_VILLAGE),
-            ("● IoT/Sensor", C_IOT),
-            ("— Fiber",      C_GATEWAY),
-            ("— Microwave",  C_BACKBONE),
-            ("— Wi-Fi",      C_VILLAGE),
-            ("-- Backup",    C_RELAY),
-            ("● Packet",     C_PACKET),
-            ("● Emergency",  C_PACKET_EMG),
-            ("● DTN buf",    C_PACKET_DTN),
+            ("● Gateway", C_GATEWAY), ("● Backbone", C_BACKBONE),
+            ("● Relay", C_RELAY), ("● Village", C_VILLAGE),
+            ("● IoT/Sensor", C_IOT), ("— Fiber", C_GATEWAY),
+            ("— Microwave", C_BACKBONE), ("— Wi-Fi", C_VILLAGE),
+            ("-- Backup", C_RELAY), ("● Packet", C_PACKET),
+            ("● Emergency", C_PACKET_EMG), ("● DTN buf", C_PACKET_DTN),
         ]
-        col2 = False
         for i, (lbl, c) in enumerate(legend):
-            cx = px + (PANEL_W//2 - 10 if i % 2 else 0)
-            self.screen.blit(self.font_xs.render(lbl, True, c), (px + (160 if i%2 else 0), y))
+            self.screen.blit(self.font_xs.render(lbl, True, c), 
+                           (px + (160 if i%2 else 0), y))
             if i % 2:
                 y += 13
         if len(legend) % 2:
@@ -661,23 +694,22 @@ class MountainNetSim:
         y += 4
         pygame.draw.line(self.screen, PANEL_BORDER, (NET_W+4, y), (W-4, y)); y += 8
 
-        # ── Log ──
+        # Event Log
         t = self.font_md.render("Event Log", True, C_MUTED)
         self.screen.blit(t, (px, y)); y += 15
         log_area_h = H - y - 10
         for msg, col, ts in list(self.log)[-int(log_area_h//13):]:
             elapsed = time.time() - ts
             alpha_f = max(0.3, 1.0 - elapsed / 30.0)
-            r,g,b   = col
-            fade    = (int(r*alpha_f), int(g*alpha_f), int(b*alpha_f))
+            r,g,b = col
+            fade = (int(r*alpha_f), int(g*alpha_f), int(b*alpha_f))
             txt = self.font_xs.render(msg[:42], True, fade)
             self.screen.blit(txt, (px, y)); y += 13
             if y > H - 15:
                 break
 
-    # ──────────────────────────────────────────────────────────────────────────
     def run(self):
-        self._log("🏔  WELLCOME TO HIGH MOUNTAIN NETWORK!", C_BACKBONE)
+        self._log("🏔  WELCOME TO HIGH MOUNTAIN NETWORK!", C_BACKBONE)
         self._log("click a node and type message, then press Enter to send", C_MUTED)
         self._log("right-click a node = toggle signal", C_YELLOW)
         self._log("press [S] for random link loss, [R] to reset all links", C_MUTED)
@@ -689,7 +721,6 @@ class MountainNetSim:
             self.draw()
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
 if __name__ == "__main__":
     sim = MountainNetSim()
     sim.run()
