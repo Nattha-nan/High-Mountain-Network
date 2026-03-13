@@ -1,0 +1,211 @@
+networks:
+  backbone_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+  access_net_north:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
+  access_net_east:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/24
+  access_net_south:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.23.0.0/24
+  sensor_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.24.0.0/24
+
+services:
+
+  # ── LAYER B: BACKBONE ──────────────────────────────
+  internet-gateway:
+    build: ./node
+    container_name: internet-gateway
+    environment:
+      - NODE_NAME=internet-gateway
+      - NODE_ROLE=gateway
+      - NEIGHBORS=summit-alpha,summit-beta
+    networks:
+      backbone_net:
+        ipv4_address: 172.20.0.2
+    ports:
+      - "9000:8000"
+
+  summit-alpha:
+    build: ./node
+    container_name: summit-alpha
+    environment:
+      - NODE_NAME=summit-alpha
+      - NODE_ROLE=summit
+      - NEIGHBORS=internet-gateway,summit-beta,relay-north,relay-center
+    networks:
+      backbone_net:
+        ipv4_address: 172.20.0.10
+      access_net_north:
+        ipv4_address: 172.21.0.10
+
+  summit-beta:
+    build: ./node
+    container_name: summit-beta
+    environment:
+      - NODE_NAME=summit-beta
+      - NODE_ROLE=summit
+      - NEIGHBORS=internet-gateway,summit-alpha,summit-gamma,relay-center
+    networks:
+      backbone_net:
+        ipv4_address: 172.20.0.11
+
+  summit-gamma:
+    build: ./node
+    container_name: summit-gamma
+    environment:
+      - NODE_NAME=summit-gamma
+      - NODE_ROLE=summit
+      - NEIGHBORS=summit-beta,relay-center,relay-east
+    networks:
+      backbone_net:
+        ipv4_address: 172.20.0.12
+      access_net_east:
+        ipv4_address: 172.22.0.12
+
+  # ── LAYER B/C: RELAY (DTN NODES) ───────────────────
+  relay-north:
+    build: ./node
+    container_name: relay-north
+    environment:
+      - NODE_NAME=relay-north
+      - NODE_ROLE=relay
+      - NEIGHBORS=summit-alpha,village-a,village-b
+    networks:
+      backbone_net:
+        ipv4_address: 172.20.0.20
+      access_net_north:
+        ipv4_address: 172.21.0.20
+
+  relay-center:
+    build: ./node
+    container_name: relay-center
+    environment:
+      - NODE_NAME=relay-center
+      - NODE_ROLE=relay
+      - NEIGHBORS=summit-alpha,summit-beta,summit-gamma,village-b,village-c
+    networks:
+      backbone_net:
+        ipv4_address: 172.20.0.21
+      access_net_north:
+        ipv4_address: 172.21.0.21
+      access_net_east:
+        ipv4_address: 172.22.0.21
+      access_net_south:
+        ipv4_address: 172.23.0.21
+
+  relay-east:
+    build: ./node
+    container_name: relay-east
+    environment:
+      - NODE_NAME=relay-east
+      - NODE_ROLE=relay
+      - NEIGHBORS=summit-gamma,village-c,village-d
+    networks:
+      backbone_net:
+        ipv4_address: 172.20.0.22
+      access_net_east:
+        ipv4_address: 172.22.0.22
+
+  # ── LAYER A: VILLAGE ───────────────────────────────
+  village-a:
+    build: ./node
+    container_name: village-a
+    environment:
+      - NODE_NAME=village-a
+      - NODE_ROLE=village
+      - NEIGHBORS=relay-north,sensor-cluster-1
+    networks:
+      access_net_north:
+        ipv4_address: 172.21.0.30
+    ports:
+      - "9001:8000"
+
+  village-b:
+    build: ./node
+    container_name: village-b
+    environment:
+      - NODE_NAME=village-b
+      - NODE_ROLE=village
+      - NEIGHBORS=relay-north,relay-center,village-c,sensor-cluster-1
+    networks:
+      access_net_north:
+        ipv4_address: 172.21.0.31
+      access_net_south:
+        ipv4_address: 172.23.0.31
+    ports:
+      - "9002:8000"
+
+  village-c:
+    build: ./node
+    container_name: village-c
+    environment:
+      - NODE_NAME=village-c
+      - NODE_ROLE=village
+      - NEIGHBORS=relay-center,relay-east,village-b,sensor-cluster-2
+    networks:
+      access_net_south:
+        ipv4_address: 172.23.0.32
+      access_net_east:
+        ipv4_address: 172.22.0.32
+    ports:
+      - "9003:8000"
+
+  village-d:
+    build: ./node
+    container_name: village-d
+    environment:
+      - NODE_NAME=village-d
+      - NODE_ROLE=village
+      - NEIGHBORS=relay-east,sensor-cluster-2
+    networks:
+      access_net_east:
+        ipv4_address: 172.22.0.33
+    ports:
+      - "9004:8000"
+
+  # ── IOT: SENSOR CLUSTERS ───────────────────────────
+  sensor-cluster-1:
+    build: ./node
+    container_name: sensor-cluster-1
+    environment:
+      - NODE_NAME=sensor-cluster-1
+      - NODE_ROLE=sensor
+      - NEIGHBORS=village-a,village-b
+    networks:
+      access_net_north:
+        ipv4_address: 172.21.0.40
+      sensor_net:
+        ipv4_address: 172.24.0.40
+    ports:
+      - "9005:8000"
+
+  sensor-cluster-2:
+    build: ./node
+    container_name: sensor-cluster-2
+    environment:
+      - NODE_NAME=sensor-cluster-2
+      - NODE_ROLE=sensor
+      - NEIGHBORS=village-c,village-d
+    networks:
+      access_net_east:
+        ipv4_address: 172.22.0.41
+      sensor_net:
+        ipv4_address: 172.24.0.41
+    ports:
+      - "9006:8000"
