@@ -266,5 +266,3 @@ Docker Desktop   → ง่ายสุด แนะนำสำหรับ Win
 WSL2 + Ubuntu    → เหมือน Fedora เลย
 Podman Windows   → ยุ่งยาก ไม่แนะนำ
 ```
-
-ถ้าเพื่อนใช้ Windows แนะนำให้ลง **Docker Desktop** ครับ ไม่ต้องแก้โค้ดอะไรเลย รันได้ทันที 🎯
