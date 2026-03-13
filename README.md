@@ -3,7 +3,7 @@
 # 🏔️ Mountain Network Project — README
 
 > **Course:** Computer Networks (Undergraduate)  
-> **Team:** 5 Members | Architecture · Specialist · DevOps/IaC · Tester
+> **Team:** 5 Members | Architecture · Engineer · Specialist · DevOps · Tester
 
 ---
 
