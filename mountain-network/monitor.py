@@ -15,7 +15,7 @@ NODES = {
 
 # threshold สำหรับ anomaly detection
 QUEUE_THRESHOLD = 3      # queue เกิน 3 = ผิดปกติ
-CHECK_INTERVAL  = 20     # เช็คทุก 20 วินาที
+CHECK_INTERVAL  = 10     # เช็คทุก 20 วินาที
 
 async def check_node(client: httpx.AsyncClient, name: str, url: str) -> dict:
     try:
