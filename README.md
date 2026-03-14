@@ -1,6 +1,6 @@
 # High-Mountain-Network
 #### ใช้ Python 3
-# 🏔️ Mountain Network Project — README
+# 🏔️ High Mountain Network Project — README
 
 > **Course:** Computer Networks (Undergraduate)  
 > **Team:** 5 Members | Architecture · Engineer · Specialist · DevOps · Tester
