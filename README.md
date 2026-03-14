@@ -1,5 +1,4 @@
 # High-Mountain-Network
-#### ใช้ Python 3
 # 🏔️ High Mountain Network Project — README
 
 > **Course:** Computer Networks (Undergraduate)  
