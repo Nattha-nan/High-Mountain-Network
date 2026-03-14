@@ -4,6 +4,12 @@
 > **Course:** Computer Networks (Undergraduate)  
 > **Team:** 5 Members | Architecture · Engineer · Specialist · DevOps · Tester
 
+# การรันโปรเจค
+
+โหลดโฟลเดอร์ mountain-network
+
+ดูวิธี set up ที่ไฟล์ WINDOWS_SETUP.md
+
 ---
 
 ## 📖 โปรเจกต์นี้คืออะไร?
