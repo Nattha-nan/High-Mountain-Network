@@ -4,7 +4,7 @@
 > **Course:** Computer Networks (Undergraduate)  
 > **Team:** 5 Members | Architecture · Engineer · Specialist · DevOps · Tester
 
-# การรันโปรเจค
+# การ Run โปรเจค
 
 โหลดโฟลเดอร์ mountain-network
 
