@@ -51,7 +51,10 @@ def container_exec(container, python_code):
     """รัน python3 ใน container"""
     result = subprocess.run(
         [ENGINE, "exec", container, "python3", "-c", python_code],
-        capture_output=True, text=True
+        capture_output=True,
+        text=True,
+        encoding="utf-8",      # ← เพิ่มบรรทัดนี้
+        errors="replace"       # ← เพิ่มบรรทัดนี้ (ถ้าอ่านไม่ได้ให้แทนด้วย ? แทน crash)
     )
     try:
         return json.loads(result.stdout)
