@@ -1,0 +1,91 @@
+You are a professional academic researcher, technical writer, and network systems analyst.
+
+Using the uploaded materials about the Mountain Network Project, create a complete academic ebook explaining the design and simulation of a resilient distributed communication system for remote mountainous environments.
+
+The ebook should be written in a professional academic style suitable for undergraduate or early graduate students studying Computer Networks, Distributed Systems, and Network Architecture.
+
+Requirements:
+
+Produce a structured ebook that could be converted into a 30–40 page academic document.
+
+Include the following structure:
+
+TITLE PAGE
+Include title, subtitle, and a short abstract.
+
+TABLE OF CONTENTS
+
+CHAPTER 1 – INTRODUCTION
+Explain the problem of communication infrastructure in remote mountain regions.
+Discuss unstable infrastructure, intermittent connectivity, and limited power supply.
+
+CHAPTER 2 – BACKGROUND THEORY
+Explain the theoretical foundations including:
+
+* Graph Theory for resilient network topology
+* Scale-free networks
+* Small-world network properties
+* Delay-Tolerant Networking (DTN)
+* Queueing theory for QoS
+* Percolation theory for network resilience
+* Energy-aware node modeling.
+
+CHAPTER 3 – SYSTEM ARCHITECTURE
+Explain the three-layer architecture:
+Access Layer, Backbone Layer, Gateway Layer.
+
+Describe the roles of:
+
+* Summit nodes
+* Relay nodes
+* Village nodes
+* Sensor clusters.
+
+Include textual descriptions of diagrams for network topology.
+
+CHAPTER 4 – MATHEMATICAL MODEL
+Present formulas and models used in the system including:
+
+* network reliability
+* DTN buffer size calculation
+* routing cost functions
+* energy consumption model.
+
+Explain each formula conceptually.
+
+CHAPTER 5 – SYSTEM IMPLEMENTATION
+Explain how the system is implemented using:
+
+* Docker containerized nodes
+* Python-based services
+* HTTP communication
+* queue-based message forwarding.
+
+Describe the simulation environment and node interactions.
+
+CHAPTER 6 – DEPLOYMENT AND MONITORING
+Explain how the system is deployed using docker-compose.
+
+Describe node services, health endpoints, and monitoring scripts.
+
+CHAPTER 7 – EXPERIMENTAL TESTING
+Describe simulation experiments including:
+
+* normal network operation
+* link failure scenarios
+* DTN buffering
+* node energy degradation.
+
+Explain evaluation metrics such as packet delivery ratio, latency, and throughput.
+
+CHAPTER 8 – RESULTS AND DISCUSSION
+Discuss expected system behavior and network resilience.
+
+ADDITIONAL SECTIONS
+
+Glossary of key networking terms.
+Key takeaways for students.
+
+Also include descriptions of diagrams and infographics that could visually illustrate the system.
+
+Format the output so it can be easily exported as a professional ebook or PDF with headings, sections, and academic tone.
