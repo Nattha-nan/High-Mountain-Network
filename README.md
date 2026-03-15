@@ -22,6 +22,23 @@
 - จัดลำดับความสำคัญ traffic (QoS)
 - ประหยัดพลังงานเมื่อแบตต่ำ (Energy Mode)
 
+## ภาพรวมสถาปัตยกรรม (โครงสร้างโปรโตคอล)
+
+Application Layer
+- แอปฉุกเฉิน / ระบบ monitoring
+  
+Transport Layer
+- TCP/UDP (จำลอง)
+
+Network Layer 
+- OSPF + DTN Overlay
+
+Data Link Layer 
+- Ethernet/Wi-Fi (จำลอง)
+
+Physical Layer
+- ลิงก์ไร้สายบนภูเขา
+
 ---
 
 ## 🗺️ Topology — 13 Nodes, 3 ชั้น
