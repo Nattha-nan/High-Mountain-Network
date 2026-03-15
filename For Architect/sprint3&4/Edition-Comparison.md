@@ -1,22 +1,56 @@
-**Mountain Network Project Comparison Report**
-*Conceptual Draft · Architectural Spec · Deployment Model*
+Mountain Network Project
+Edition Comparison
 
-**Executive Overview**
-Three stages of the Mountain Network Project were evaluated across six metrics to ensure consistency and technical integrity.
+---
 
-| **Metric** | **Conceptual Draft** | **Architectural Spec** | **Deployment Model** |
-| ------ | ------ | ------ | ------ |
-| **Consistency** | 1.0 (Baseline) | 0.9 (Adds OSPF) | 0.85 (Dockerized) |
-| **Formula Drift** | Basic Graph Theory | Adds Queuing Theory | Adds Energy Model |
-| **Terminology** | Layer A/B/C | Access/Backbone | Containers/Endpoints |
-| **Implementability**| High (Theory) | Medium (Complex) | High (Tested) |
+Introduction
 
-**Key Findings**
-1. **Consistency:** The transition from Layer A/B/C in the concept to Access/Backbone/Gateway in the architecture remains stable.
-2. **Metric Expansion:** The Deployment Model successfully introduces measurable KPIs (Packet Delivery Ratio, Energy Level) that were only qualitative in the Conceptual Draft.
-3. **Resilience Gap:** The Architectural Spec identifies the need for OSPF convergence testing, which is successfully implemented in the `demo.py` script of the Deployment Model.
+This document compares different documentation editions of the Mountain Network Project.
 
-**Conclusion**
-The Deployment Model is the strongest artifact, providing a functional 13-node simulation that validates the theoretical connectivity claims made in the early stages.
+Each edition serves a different purpose.
 
-*Report prepared: March 2026*
+---
+
+Draft Final Edition
+
+Purpose:
+Provide a concise report suitable for academic submission.
+
+Characteristics:
+
+- Shorter document
+- Focus on results
+- Technical summary
+
+---
+
+Extended Educational Edition
+
+Purpose:
+Explain networking concepts in a detailed educational format.
+
+Characteristics:
+
+- Detailed explanations
+- Conceptual discussions
+- Teaching oriented
+
+---
+
+Special Edition
+
+Purpose:
+Highlight key design principles and architecture ideas.
+
+Characteristics:
+
+- Simplified explanations
+- Concept focused
+
+---
+
+Conclusion
+
+Each edition contributes to a different aspect of understanding the Mountain Network system.
+
+The Draft Final focuses on reporting results while the Extended Edition emphasizes educational value.

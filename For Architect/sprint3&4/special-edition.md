@@ -1,50 +1,87 @@
-### Annotations on Mountain Network Project (MNP)
-##### A Critical Reading of the Lifecycle Documents
+# DAFT Special Edition
 
-This document reviews the five core artifacts of the Mountain Network Project. It tracks the evolution from the **Conceptual Phase** to the **Full Containerized Deployment**, assessing each for technical robustness and complexity.
+## Mountain Network System — Conceptual Architecture and Resilience Model
 
---------------------------------------------------------------------------------
+---
 
-#### Section I: Conceptual Framework (01_conceptual.pdf)
-##### Summary
-· Identifies the "Digital Divide" in mountain regions caused by unstable power and intermittent links.
-· Defines the 3-Layer Architecture: Access (Village/Sensors), Backbone (Summits/Relays), and Gateway.
-· Establishes the 3-level QoS: Emergency > Telemetry > Normal.
-##### Annotations
-· 1. The 3-layer separation is a sound architectural choice, allowing for modular scaling. (Robustness tag)
-· 2. The QoS mapping (40/30/30) is well-defined but lacks a formal derivation for the "Telemetry" weight in high-congestion scenarios.
+# Table of Contents
 
---------------------------------------------------------------------------------
+1. Concept Overview
+2. System Motivation
+3. Architectural Framework
+4. Resilience Strategy
+5. Monitoring and Diagnostics
+6. Future Directions
 
-#### Section II: Mathematical Formalization (02_formalization.pdf)
-##### Summary
-· Grounds the project in **Graph Theory** ($\kappa(G) \geq 2$) and **Percolation Theory**.
-· Proposes an **Epidemiological Model (SIR)** for understanding how emergency alerts spread through the mesh.
-· Defines an **Energy Model** where $E_{total} = \sum (P_{idle} + P_{tx} \cdot t_{tx} + P_{rx} \cdot t_{rx})$.
-##### Annotations
-· 1. The use of $\kappa(G) \geq 2$ as a design constraint is excellent for academic validation. (Abstraction tag)
-· 2. The SIR model for message spread is an innovative way to treat network flooding, though its implementation in Week 3 needs further proof. (Complexity layer tag)
+---
 
---------------------------------------------------------------------------------
+# 1. Concept Overview
 
-#### Section III: Architecture & Deployment (03_arch & 05_deploy)
-##### Summary
-· Specifies a 13-node system deployed via `docker-compose`.
-· Features a Python-based monitoring layer (`monitor.py`) for real-time anomaly detection.
-· Provides REST API endpoints for node health checks (e.g., `localhost:9001/health`).
-##### Annotations
-· 1. The choice of Docker/Podman provides high **Reproducibility**. (Robustness tag)
-· 2. The isolation of nodes into virtual bridge networks (`backbone_net`, `sensor_net`) correctly simulates physical separation.
+The Special Edition provides a conceptual overview of the Mountain Network architecture.
 
---------------------------------------------------------------------------------
+Rather than focusing on implementation details, this document highlights the core design philosophy that enables resilient communication in geographically challenging environments.
 
-#### Overall Project Assessment
-##### Strengths
-1. **Clear Lifecycle:** From Graph Theory to Docker deployment.
-2. **Resilience Focus:** DTN and Mesh are well-integrated.
-3. **Evaluation Metrics:** Use of Packet Delivery Ratio and Latency.
-##### Weaknesses
-1. **Power Modeling:** The simulation of "Energy Drain" is currently scripted rather than dynamic based on traffic.
-2. **Scalability:** 13 nodes are sufficient for a lab, but the OSPF convergence time for 100+ nodes is unaddressed.
+---
 
-*End of Annotations.*
+# 2. System Motivation
+
+Communication networks deployed in mountainous regions must operate under extreme constraints.
+
+These include:
+
+• intermittent connectivity
+• energy-limited devices
+• infrastructure scarcity
+
+The Mountain Network architecture addresses these constraints by introducing distributed network nodes connected through a resilient mesh topology.
+
+---
+
+# 3. Architectural Framework
+
+The system consists of several types of nodes.
+
+Gateway Node
+Provides connectivity to external internet services.
+
+Backbone Nodes
+Maintain inter-node communication within the mountain network.
+
+Village Nodes
+Provide connectivity for local communities.
+
+Sensor Nodes
+Collect environmental data for monitoring and analysis.
+
+---
+
+# 4. Resilience Strategy
+
+The architecture maintains resilience through three mechanisms.
+
+Mesh Routing
+Multiple communication paths prevent network partitioning.
+
+DTN Buffering
+Temporary packet storage during link disruptions.
+
+Traffic Prioritization
+Critical messages receive network priority.
+
+---
+
+# 5. Monitoring and Diagnostics
+
+The system includes monitoring tools capable of identifying anomalies such as node failures, queue congestion, or abnormal latency.
+
+Monitoring data provides insight into system reliability and operational performance.
+
+---
+
+# 6. Future Directions
+
+Potential extensions include:
+
+• AI-assisted anomaly detection
+• energy-aware routing algorithms
+• adaptive topology optimization

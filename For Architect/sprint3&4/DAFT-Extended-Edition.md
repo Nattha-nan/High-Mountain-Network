@@ -1,69 +1,70 @@
-# Mountain Network Project
-## DAFT Extended Edition
+# DAFT Extended Edition
+
+## Technical Analysis of the Mountain Network Architecture
 
 ---
 
 # Table of Contents
 
-1. Extended Overview
-2. Architecture Analysis
-3. Traffic Engineering
-4. Fault Tolerance
-5. Experimental Evaluation
+1. System Overview
+2. Architectural Design Analysis
+3. Traffic Engineering Model
+4. Fault Tolerance Mechanisms
+5. Experimental Validation
 6. Final Remarks
 
 ---
 
-# 1. Extended Overview
+# 1. System Overview
 
-This edition provides a deeper technical explanation of the Mountain Network architecture.
-
-It focuses on the engineering aspects of resilient networking.
+This document presents a deeper technical interpretation of the Mountain Network architecture, focusing on the engineering mechanisms that enable resilient communication.
 
 ---
 
-# 2. Architecture Analysis
+# 2. Architectural Design Analysis
 
-The network architecture consists of three layers:
+The architecture adopts a layered networking structure consisting of:
 
-Access Layer  
-Backbone Layer  
+Access Layer
+Backbone Layer
 Gateway Layer
 
-This layered design improves scalability and modularity.
+This modular structure allows the network to scale and adapt to environmental conditions.
 
 ---
 
-# 3. Traffic Engineering
+# 3. Traffic Engineering Model
 
-Traffic engineering is used to ensure efficient network operation.
+Traffic engineering ensures that network resources are used efficiently.
 
-Emergency traffic receives guaranteed bandwidth while best-effort traffic uses remaining capacity.
-
----
-
-# 4. Fault Tolerance
-
-Fault tolerance is achieved through:
-
-- mesh routing
-- redundant paths
-- buffering mechanisms
+Priority scheduling mechanisms guarantee bandwidth availability for emergency communication while allowing best-effort traffic to use remaining capacity.
 
 ---
 
-# 5. Experimental Evaluation
+# 4. Fault Tolerance Mechanisms
 
-Tests include:
+Fault tolerance is achieved through several mechanisms:
 
-- link failure scenarios
-- DTN message buffering
-- traffic prioritization tests
+• redundant routing paths
+• distributed network nodes
+• delay-tolerant message buffering
 
-Results demonstrate that the system can maintain communication under disruption.
+These mechanisms collectively improve network survivability.
+
+---
+
+# 5. Experimental Validation
+
+Testing scenarios may include:
+
+• simulated link failures
+• network congestion conditions
+• disruption-tolerant communication tests
+
+Experimental results demonstrate the system's ability to maintain communication despite unstable connectivity.
 
 ---
 
 # 6. Final Remarks
 
-The architecture provides a practical framework for resilient networking in remote environments.
+The Mountain Network architecture provides a practical example of resilient network design suitable for remote environments.
