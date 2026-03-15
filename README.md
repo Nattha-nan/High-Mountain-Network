@@ -26,12 +26,16 @@
 
 Application Layer
 - แอปฉุกเฉิน / ระบบ monitoring
+  
 Transport Layer
 - TCP/UDP (จำลอง)
+
 Network Layer 
 - OSPF + DTN Overlay
+
 Data Link Layer 
 - Ethernet/Wi-Fi (จำลอง)
+
 Physical Layer
 - ลิงก์ไร้สายบนภูเขา
 
