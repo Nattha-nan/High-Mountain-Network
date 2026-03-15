@@ -23,6 +23,7 @@
 - ประหยัดพลังงานเมื่อแบตต่ำ (Energy Mode)
 
 ## ภาพรวมสถาปัตยกรรม (โครงสร้างโปรโตคอล)
+
 Application Layer
 - แอปฉุกเฉิน / ระบบ monitoring
 Transport Layer
