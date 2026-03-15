@@ -22,18 +22,17 @@
 - จัดลำดับความสำคัญ traffic (QoS)
 - ประหยัดพลังงานเมื่อแบตต่ำ (Energy Mode)
 
-## ภาพรวมสถาปัตยกรรม
- - โครงสร้างโปรโตคอล -
+## ภาพรวมสถาปัตยกรรม (โครงสร้างโปรโตคอล)
 Application Layer
- → แอปฉุกเฉิน / ระบบ monitoring
+- แอปฉุกเฉิน / ระบบ monitoring
 Transport Layer
- → TCP/UDP (จำลอง)
+- TCP/UDP (จำลอง)
 Network Layer 
-→ OSPF + DTN Overlay
+- OSPF + DTN Overlay
 Data Link Layer 
-→ Ethernet/Wi-Fi (จำลอง)
+- Ethernet/Wi-Fi (จำลอง)
 Physical Layer
- → ลิงก์ไร้สายบนภูเขา
+- ลิงก์ไร้สายบนภูเขา
 
 ---
 
