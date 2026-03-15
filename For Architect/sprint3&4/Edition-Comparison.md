@@ -1,56 +1,54 @@
 Mountain Network Project
-Edition Comparison
+Edition Comparison Document
 
 ---
 
-Introduction
+# Introduction
 
-This document compares different documentation editions of the Mountain Network Project.
+This document compares the different documentation editions created for the Mountain Network Project.
 
-Each edition serves a different purpose.
-
----
-
-Draft Final Edition
-
-Purpose:
-Provide a concise report suitable for academic submission.
-
-Characteristics:
-
-- Shorter document
-- Focus on results
-- Technical summary
+Each edition serves a different purpose and audience.
 
 ---
 
-Extended Educational Edition
+# Draft Final Edition
 
-Purpose:
-Explain networking concepts in a detailed educational format.
+Purpose
+Provide a concise technical report suitable for academic submission.
 
-Characteristics:
+Characteristics
 
-- Detailed explanations
-- Conceptual discussions
-- Teaching oriented
-
----
-
-Special Edition
-
-Purpose:
-Highlight key design principles and architecture ideas.
-
-Characteristics:
-
-- Simplified explanations
-- Concept focused
+* concise description
+* technical summary
+* focus on results
 
 ---
 
-Conclusion
+# Extended Educational Edition
 
-Each edition contributes to a different aspect of understanding the Mountain Network system.
+Purpose
+Explain networking concepts and system design in greater detail.
 
-The Draft Final focuses on reporting results while the Extended Edition emphasizes educational value.
+Characteristics
+
+* detailed explanations
+* educational orientation
+* expanded system description
+
+---
+
+# Special Edition
+
+Purpose
+Highlight the conceptual design philosophy behind the architecture.
+
+Characteristics
+
+* simplified explanations
+* concept-focused structure
+
+---
+
+# Conclusion
+
+Each edition contributes to a different level of understanding of the Mountain Network system. Together they provide a comprehensive documentation framework for both technical evaluation and educational use.

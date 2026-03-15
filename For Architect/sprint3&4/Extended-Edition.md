@@ -2,224 +2,313 @@
 
 ## Mountain Network Project: Resilient Communication Architecture for Remote Mountain Environments
 
-*A comprehensive architectural and systems analysis of a resilient distributed network designed for intermittent connectivity environments.*
-
 ---
 
 # Table of Contents
 
 1. Introduction
-2. Problem Context and Environmental Constraints
-3. Network Design Principles
-4. Layered Architecture Model
-5. Delay-Tolerant Networking Mechanism
-6. Traffic Prioritization and QoS Strategy
-7. Implementation Architecture
-8. Deployment Model
-9. System Evaluation Metrics
-10. Educational and Research Implications
-11. Conclusion
+2. Background and Problem Context
+3. System Architecture
+4. Network Topology Model
+5. Delay-Tolerant Networking Model
+6. Network Reliability Model
+7. Energy Consumption Model
+8. Routing Cost Function
+9. Traffic Prioritization
+10. Deployment Architecture
+11. Performance Metrics
+12. Monitoring and Fault Detection
+13. Educational Insights
+14. Conclusion
 
 ---
 
 # 1. Introduction
 
-Communication infrastructure in mountainous regions presents significant engineering challenges due to environmental isolation, unstable connectivity, and limited power availability. Conventional networking approaches assume continuous connectivity and reliable infrastructure, assumptions that do not hold in remote terrain.
+Reliable communication infrastructure is essential for emergency response, environmental monitoring, and community connectivity. However, remote mountain environments often lack stable networking infrastructure due to terrain barriers, limited power availability, and sparse population distribution.
 
-The Mountain Network Project proposes a resilient distributed communication architecture capable of maintaining service even when connectivity becomes intermittent. The system integrates mesh networking, delay-tolerant communication strategies, and prioritized traffic management.
+Traditional networking architectures assume stable connectivity and centralized infrastructure. In mountainous regions, these assumptions rarely hold true. As a result, communication networks must be designed to tolerate intermittent connectivity and infrastructure disruptions.
 
-This extended edition provides a detailed explanation of the architectural model, system components, and operational principles behind the network design. The goal is to present the project not only as a prototype system but also as a teaching framework for understanding resilient networking concepts.
+The **Mountain Network Project** proposes a resilient distributed communication architecture that maintains communication capabilities even under unstable network conditions. The system integrates mesh networking, delay-tolerant communication strategies, and prioritized traffic management.
 
----
-
-# 2. Problem Context and Environmental Constraints
-
-Remote mountainous environments introduce several networking constraints:
-
-• Limited or unreliable internet connectivity
-• Geographic barriers blocking radio communication
-• Power-constrained devices such as solar-powered sensors
-• Sparse infrastructure and long node distances
-
-These conditions require networks that can tolerate disruption while maintaining essential communication services.
-
-Traditional client-server models are insufficient in these environments because they rely on stable connectivity to centralized infrastructure.
-
-Instead, distributed and self-healing network architectures are required.
+This extended edition explains the system architecture, theoretical models, and operational principles behind the network design.
 
 ---
 
-# 3. Network Design Principles
+# 2. Background and Problem Context
 
-The Mountain Network architecture is designed according to four core principles.
+Mountain regions present several networking challenges:
 
-### Resilience
+* Physical barriers such as cliffs and dense forests that block radio signals
+* Lack of continuous power supply for communication infrastructure
+* Sparse distribution of users and network nodes
+* High latency due to multi-hop communication paths
 
-The network must remain operational even when individual links fail.
+Because of these constraints, traditional centralized networking approaches become unreliable. Instead, decentralized and fault-tolerant architectures must be used.
 
-### Redundancy
-
-Multiple communication paths must exist between nodes to prevent single points of failure.
-
-### Disruption Tolerance
-
-The system must support temporary network disconnections without data loss.
-
-### Service Prioritization
-
-Critical communications must be delivered even when network capacity is limited.
-
-These principles guide the design of the network topology and routing strategy.
+Mesh networking and delay-tolerant communication techniques provide promising solutions for such environments.
 
 ---
 
-# 4. Layered Architecture Model
+# 3. System Architecture
 
-The system adopts a three-layer architecture to organize network functionality.
+The Mountain Network follows a layered architecture consisting of three primary layers.
 
-## Access Layer
+### Access Layer
 
-The access layer connects end users and environmental sensors to the network.
+The Access Layer connects end users and local devices to the network.
 
-Typical nodes include:
+Typical devices include:
 
-• Village communication nodes
-• IoT sensor clusters
+* village communication nodes
+* environmental monitoring sensors
+* local information terminals
 
-These nodes collect data and forward it to the backbone network.
+Responsibilities of the Access Layer include:
 
----
-
-## Backbone Layer
-
-The backbone layer interconnects mountain nodes through a mesh topology.
-
-Backbone nodes include:
-
-• Summit nodes
-• Relay nodes
-
-These nodes provide routing redundancy and maintain connectivity between access networks.
+* collecting user traffic
+* forwarding data to relay nodes
+* providing local connectivity services
 
 ---
 
-## Gateway Layer
+### Backbone Layer
 
-The gateway layer connects the mountain network to external internet infrastructure.
+The Backbone Layer interconnects major network nodes across mountain regions.
 
-The Internet Gateway node functions as the external communication bridge between the local network and global networks.
+Nodes in this layer include:
 
----
+* summit relay stations
+* long-distance wireless routers
+* high-capacity relay nodes
 
-# 5. Delay-Tolerant Networking Mechanism
-
-In unstable networks, communication links may temporarily disappear. To address this problem, the system implements Delay-Tolerant Networking (DTN).
-
-DTN introduces a store-and-forward communication model.
-
-When a node cannot immediately transmit a packet, the message is stored locally in a queue buffer.
-
-Transmission is retried periodically until a connection becomes available.
-
-This mechanism ensures that temporary disruptions do not result in permanent message loss.
+The backbone uses a **mesh topology** that provides multiple redundant communication paths between nodes.
 
 ---
 
-# 6. Traffic Prioritization and QoS Strategy
+### Gateway Layer
 
-Network traffic is divided into three priority classes.
+The Gateway Layer connects the mountain network to the global internet.
 
-### Emergency Traffic
+The Internet Gateway performs several functions:
 
-Critical communication such as emergency alerts and disaster signals.
+* external internet connectivity
+* data synchronization
+* routing coordination
 
-### Telemetry Traffic
-
-Sensor data such as weather measurements or environmental monitoring.
-
-### Best-Effort Traffic
-
-General internet usage.
-
-By prioritizing emergency communication, the system ensures that essential services remain functional during network congestion.
+Even if the gateway becomes temporarily unreachable, internal communication within the mountain network remains operational.
 
 ---
 
-# 7. Implementation Architecture
+# 4. Network Topology Model
 
-The prototype system can be implemented using containerized network nodes.
+The network can be mathematically modeled using graph theory.
 
-Each node runs as an isolated software environment that simulates a physical network device.
+G = (V,E)
 
-Technologies used in the prototype may include:
+Where:
 
-• Docker containers
-• Linux networking tools
-• Python monitoring scripts
+* (V) represents the set of network nodes
+* (E) represents the set of communication links
 
-Routing behavior and failure recovery can be simulated within this environment.
+Each node may represent a village router, relay node, or gateway device.
 
----
-
-# 8. Deployment Model
-
-The deployment model simulates a distributed network of interconnected nodes.
-
-The topology typically includes:
-
-• Internet gateway node
-• Multiple summit backbone nodes
-• Relay nodes connecting network segments
-• Village access nodes
-• Environmental sensor clusters
-
-Each node communicates through virtual network interfaces that represent real-world communication links.
-
-Monitoring services observe node health and network performance.
+The mesh topology allows multiple communication paths between nodes, improving network resilience.
 
 ---
 
-# 9. System Evaluation Metrics
+# 5. Delay-Tolerant Networking Model
 
-System performance is evaluated using several network metrics.
+Because connectivity between nodes may not always be available, the network implements a **store-and-forward mechanism**.
 
-### Packet Delivery Ratio
+Packets are temporarily stored at nodes until a communication path becomes available.
 
-The percentage of successfully delivered packets.
+Queue dynamics can be modeled as:
 
-### Latency
+[
+Q(t+1) = Q(t) + A(t) - D(t)
+]
 
-The time required for a packet to travel between nodes.
+Where:
 
-### Throughput
+* (Q(t)) = number of packets stored at time (t)
+* (A(t)) = arriving packets
+* (D(t)) = transmitted packets
 
-The amount of data transferred through the network per unit time.
-
-### Packet Loss Rate
-
-The proportion of packets lost during transmission.
-
-These metrics provide quantitative evidence of the network's reliability.
+This model ensures that temporary link disruptions do not result in permanent data loss.
 
 ---
 
-# 10. Educational and Research Implications
+# 6. Network Reliability Model
 
-Beyond its practical purpose, the Mountain Network Project serves as an educational platform for studying resilient network design.
+Network reliability measures the probability that communication remains available despite link failures.
 
-Students can use the system to explore:
+[
+R_{network} = 1 - \prod_{i=1}^{n}(1 - r_i)
+]
 
-• Mesh network topology
-• Fault tolerant routing strategies
-• Disruption tolerant communication models
-• Quality of Service mechanisms
+Where:
 
-The project bridges theoretical networking principles with practical implementation.
+* (r_i) = reliability of communication link (i)
+* (n) = number of links along a communication path
+
+A mesh topology increases reliability because multiple paths may exist between nodes.
 
 ---
 
-# 11. Conclusion
+# 7. Energy Consumption Model
 
-The Mountain Network Project demonstrates how distributed networking principles can support communication in environments where traditional infrastructure fails.
+Many network nodes operate using batteries or solar panels. Energy efficiency therefore becomes an important design consideration.
 
-By integrating mesh topology, delay-tolerant networking, and prioritized traffic management, the architecture provides a robust solution for remote communication systems.
+Energy consumption can be estimated using the following model:
+
+[
+E_{total} = E_{tx} + E_{rx} + E_{idle}
+]
+
+Where:
+
+* (E_{tx}) = transmission energy
+* (E_{rx}) = receiving energy
+* (E_{idle}) = energy consumed during idle state
+
+Energy-aware routing may reduce communication frequency when battery levels become critical.
+
+---
+
+# 8. Routing Cost Function
+
+Routing decisions in the network consider multiple factors including latency, energy consumption, and reliability.
+
+The routing cost function can be defined as:
+
+[
+C_{route} = \alpha L + \beta D + \gamma E
+]
+
+Where:
+
+* (L) = link latency
+* (D) = packet delay
+* (E) = energy cost
+* (\alpha, \beta, \gamma) = weighting parameters
+
+This multi-metric approach helps determine efficient routing paths.
+
+---
+
+# 9. Traffic Prioritization
+
+Network traffic is categorized into three priority levels.
+
+**Emergency Traffic**
+
+Examples:
+
+* disaster alerts
+* emergency communication
+
+This traffic receives the highest priority.
+
+---
+
+**Telemetry Traffic**
+
+Includes sensor data such as:
+
+* weather monitoring
+* environmental sensors
+
+---
+
+**Best-Effort Traffic**
+
+Examples include:
+
+* normal internet browsing
+* file transfers
+
+These packets are transmitted only when network resources are available.
+
+---
+
+# 10. Deployment Architecture
+
+A typical Mountain Network deployment may include:
+
+* 1 Internet Gateway node
+* 3–5 backbone relay nodes
+* multiple village access nodes
+* environmental sensor clusters
+
+Nodes communicate through long-range wireless links forming a distributed mesh network.
+
+---
+
+# 11. Performance Metrics
+
+Network performance can be evaluated using several metrics.
+
+Packet Delivery Ratio
+
+[
+PDR = \frac{Packets_{received}}{Packets_{sent}}
+]
+
+Average Latency
+
+[
+Latency_{avg} = \frac{\sum (t_{receive} - t_{send})}{N}
+]
+
+Throughput
+
+[
+Throughput = \frac{Total\ Data\ Delivered}{Time}
+]
+
+Packet Loss Rate
+
+[
+PacketLoss = \frac{Packets_{sent} - Packets_{received}}{Packets_{sent}}
+]
+
+These metrics help evaluate the reliability and efficiency of the network.
+
+---
+
+# 12. Monitoring and Fault Detection
+
+A monitoring system continuously analyzes network performance indicators.
+
+Detected anomalies may include:
+
+* node failures
+* excessive packet delay
+* network congestion
+
+Monitoring tools allow administrators to identify and resolve problems quickly.
+
+---
+
+# 13. Educational Insights
+
+The Mountain Network Project serves as an educational platform for studying several networking concepts:
+
+* mesh network topology
+* fault-tolerant communication
+* delay-tolerant networking
+* distributed system architecture
+* network performance analysis
+
+Students can simulate network behavior and evaluate different routing strategies.
+
+---
+
+# 14. Conclusion
+
+The Mountain Network Project demonstrates how resilient communication systems can be designed for environments with unstable infrastructure.
+
+By combining mesh topology, delay-tolerant networking, and prioritized traffic management, the system provides reliable communication even in remote mountain regions.
+
+Such architectures are valuable not only for remote communities but also for disaster response networks and temporary emergency communication systems.

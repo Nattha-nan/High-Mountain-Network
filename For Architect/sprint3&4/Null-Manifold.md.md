@@ -1,53 +1,53 @@
 # DAFT Null Manifold
 
-## Failure Space and Recovery Model in the Mountain Network
+## Failure State Model of the Mountain Network
 
 ---
 
 # Table of Contents
 
-1. Conceptual Framework
+1. Concept Introduction
 2. Network State Model
 3. Failure Conditions
-4. Recovery Mechanisms
+4. Recovery Mechanism
 
 ---
 
-# 1. Conceptual Framework
+# 1. Concept Introduction
 
-In resilient networking systems, temporary failures are expected rather than exceptional. The Null Manifold concept represents the theoretical space of network states in which connectivity may degrade without causing total system failure.
+The Null Manifold concept describes a theoretical state space where network connectivity may degrade without causing permanent communication failure.
 
 ---
 
 # 2. Network State Model
 
-The system may operate under several states.
+The network may operate in three states.
 
 Operational State
-All network links function normally.
+All communication links function normally.
 
 Degraded State
 Some links fail but alternative routes remain available.
 
 Disconnected State
-Gateway access is temporarily unavailable.
+External gateway connectivity becomes temporarily unavailable.
 
 ---
 
 # 3. Failure Conditions
 
-Failure scenarios may include:
+Failure scenarios include:
 
-• physical link disruption
-• relay node shutdown
-• internet gateway outage
+* relay node shutdown
+* backbone link disruption
+* gateway connectivity loss
 
-The architecture must tolerate these conditions while preserving stored communication.
+The network must tolerate these failures while preserving stored messages.
 
 ---
 
-# 4. Recovery Mechanisms
+# 4. Recovery Mechanism
 
-Once connectivity is restored, queued messages are transmitted through available routes.
+When connectivity is restored, stored packets are forwarded to their destination.
 
-This recovery model ensures that temporary disruptions do not lead to permanent information loss.
+This recovery process ensures that temporary failures do not result in permanent data loss.

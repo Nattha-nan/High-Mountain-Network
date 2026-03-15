@@ -1,87 +1,83 @@
 # DAFT Special Edition
 
-## Mountain Network System — Conceptual Architecture and Resilience Model
+## Conceptual Overview of the Mountain Network Architecture
 
 ---
 
 # Table of Contents
 
 1. Concept Overview
-2. System Motivation
-3. Architectural Framework
+2. Motivation
+3. System Components
 4. Resilience Strategy
-5. Monitoring and Diagnostics
-6. Future Directions
+5. Monitoring System
+6. Future Work
 
 ---
 
 # 1. Concept Overview
 
-The Special Edition provides a conceptual overview of the Mountain Network architecture.
-
-Rather than focusing on implementation details, this document highlights the core design philosophy that enables resilient communication in geographically challenging environments.
+The DAFT Special Edition provides a conceptual overview of the Mountain Network system. The focus of this document is to highlight the design philosophy and architectural ideas behind resilient networking.
 
 ---
 
-# 2. System Motivation
+# 2. Motivation
 
-Communication networks deployed in mountainous regions must operate under extreme constraints.
+Remote mountain environments suffer from unreliable connectivity and limited infrastructure. Communication systems must therefore tolerate disruptions while maintaining essential services.
 
-These include:
-
-• intermittent connectivity
-• energy-limited devices
-• infrastructure scarcity
-
-The Mountain Network architecture addresses these constraints by introducing distributed network nodes connected through a resilient mesh topology.
+The Mountain Network system addresses these challenges through distributed network design and disruption-tolerant communication techniques.
 
 ---
 
-# 3. Architectural Framework
+# 3. System Components
 
-The system consists of several types of nodes.
+The network contains several types of nodes.
 
 Gateway Node
 Provides connectivity to external internet services.
 
 Backbone Nodes
-Maintain inter-node communication within the mountain network.
+Forward traffic across the mountain network.
 
 Village Nodes
-Provide connectivity for local communities.
+Provide communication services for local communities.
 
 Sensor Nodes
-Collect environmental data for monitoring and analysis.
+Collect environmental monitoring data.
 
 ---
 
 # 4. Resilience Strategy
 
-The architecture maintains resilience through three mechanisms.
+Network resilience is achieved using:
 
-Mesh Routing
-Multiple communication paths prevent network partitioning.
+Mesh topology
+Multiple routing paths between nodes.
 
-DTN Buffering
-Temporary packet storage during link disruptions.
+DTN buffering
+Temporary packet storage during link failures.
 
-Traffic Prioritization
-Critical messages receive network priority.
-
----
-
-# 5. Monitoring and Diagnostics
-
-The system includes monitoring tools capable of identifying anomalies such as node failures, queue congestion, or abnormal latency.
-
-Monitoring data provides insight into system reliability and operational performance.
+Traffic prioritization
+Critical messages receive higher transmission priority.
 
 ---
 
-# 6. Future Directions
+# 5. Monitoring System
 
-Potential extensions include:
+The monitoring component collects network logs and detects anomalies such as:
 
-• AI-assisted anomaly detection
-• energy-aware routing algorithms
-• adaptive topology optimization
+* node failure
+* high latency
+* packet congestion
+
+Monitoring tools help maintain system reliability.
+
+---
+
+# 6. Future Work
+
+Future improvements may include:
+
+* AI-based anomaly detection
+* energy-aware routing algorithms
+* adaptive network topology optimization
