@@ -264,7 +264,7 @@ sudo apt install podman podman-compose
 
 ---
 
-## สรุป
+## สรุป 𖤓
 
 ```
 Docker Desktop   → ง่ายสุด แนะนำสำหรับ Windows
