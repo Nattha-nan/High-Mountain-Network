@@ -4,7 +4,11 @@
 > **Course:** Computer Networks (Undergraduate)  
 > **Team:** 5 Members | Architecture · Engineer · Specialist · DevOps · Tester
 
-### ⩥ การ Run โปรเจค
+### Final Project Presentation Slide
+
+https://www.canva.com/design/DAHEMPm_MvI/Hb9vQQhkV9Vy5KGcmRfINA/edit?utm_content=DAHEMPm_MvI&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
+#### ⩥ การ Run โปรเจค
 
 โหลดโฟลเดอร์ mountain-network
 
