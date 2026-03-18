@@ -48,20 +48,23 @@ curl.exe http://localhost:9006/health    # sensor-cluster-2
 
 ```powershell
 # ส่ง normal (ใช้ Invoke-RestMethod)
-$body = '{"origin":"village-a","destination":"relay-north","content":"Hello!","priority":"normal"}'
-Invoke-RestMethod -Uri "http://localhost:9001/send" -Method POST -ContentType "application/json" -Body $body
+Invoke-RestMethod -Uri "http://localhost:9001/send" `
+-Method Post `
+-ContentType "application/json" `
+-Body '{"origin":"village-a","destination":"village-b","content":"Hello","priority":"normal"}'
 
 # ส่ง emergency
-$body = '{"origin":"village-b","destination":"relay-center","content":"EMERGENCY!","priority":"emergency"}'
-Invoke-RestMethod -Uri "http://localhost:9002/send" -Method POST -ContentType "application/json" -Body $body
+Invoke-RestMethod -Uri "http://localhost:9002/send" `
+-Method Post `
+-ContentType "application/json" `
+-Body '{"origin":"village-b","destination":"relay-center","content":"EMERGENCY! Flood detected!","priority":"emergency"}'
 
 # ส่ง telemetry
-$body = '{"origin":"sensor-cluster-1","destination":"village-a","content":"Temp: 42C","priority":"telemetry"}'
-Invoke-RestMethod -Uri "http://localhost:9005/send" -Method POST -ContentType "application/json" -Body $body
+Invoke-RestMethod -Uri "http://localhost:9005/send" `
+-Method Post `
+-ContentType "application/json" `
+-Body '{"origin":"sensor-cluster-1","destination":"village-a","content":"Temp: 42C","priority":"telemetry"}'
 
-# หรือใช้ curl.exe ( escape double quotes ด้วย \)
-curl.exe -X POST http://localhost:9001/send -H "Content-Type: application/json" -d "{\"origin\":\"village-a\",\"destination\":\"relay-north\",\"content\":\"Hello!\",\"priority\":\"normal\"}"
-```
 
 ## 📊 ดู Log / Queue
 
@@ -81,25 +84,32 @@ docker exec relay-north python -c "import urllib.request; print(urllib.request.u
 ## 🔋 Energy / Power Mode
 
 ```powershell
-# ดู energy ปัจจุบัน
-curl.exe http://localhost:9002/energy
+# ดู energy ปัจจุบันInvoke-RestMethod -Uri "http://localhost:9002/energy"
 
 # ลด energy (จำลองแบตต่ำ)
-$body = '{"level": 15}'
-Invoke-RestMethod -Uri "http://localhost:9002/energy" -Method POST -ContentType "application/json" -Body $body
+Invoke-RestMethod -Uri "http://localhost:9002/energy" `
+-Method Post `
+-ContentType "application/json" `
+-Body '{"level": 15}'
+
 
 # คืน energy กลับ
 $body = '{"level": 100}'
 Invoke-RestMethod -Uri "http://localhost:9002/energy" -Method POST -ContentType "application/json" -Body $body
 
 # เปิด/ปิด low power mode ตรงๆ
-$body = '{"low_power": true}'
-Invoke-RestMethod -Uri "http://localhost:9002/power" -Method POST -ContentType "application/json" -Body $body
+Invoke-RestMethod -Uri "http://localhost:9002/energy" `
+-Method Post `
+-ContentType "application/json" `
+-Body '{"level": 100}'
+
 
 # ปิด low power mode
-$body = '{"low_power": false}'
-Invoke-RestMethod -Uri "http://localhost:9002/power" -Method POST -ContentType "application/json" -Body $body
-```
+Invoke-RestMethod -Uri "http://localhost:9002/power" `
+-Method Post `
+-ContentType "application/json" `
+-Body '{"low_power": true}'
+
 
 ## 📺 Monitor
 
